@@ -10,7 +10,7 @@ import UIKit
 class GenreListViewController: UIViewController {
 
     //MARK: - Atributes
-    
+    let viewModel = MoviesViewModel()
     var gen: String = ""
     var idGen: Int = 0
     var results:[Movie] = []
