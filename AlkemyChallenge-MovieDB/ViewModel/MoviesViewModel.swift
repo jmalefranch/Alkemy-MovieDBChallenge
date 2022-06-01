@@ -19,6 +19,7 @@ class MoviesViewModel {
     let messageWrongMail = "❗️Your e-mail format is wrong."
     let messageEmptyLabel = "🙏🏻Please, enter your e-mail address."
     let alertActionTitle = "Accept"
+    let emptyMoviesList = "There aren't movies on your search. Please pick another gender."
  
     
     func getStringGenre( gnre: [String] ) -> String {
