@@ -35,6 +35,12 @@ class GenreListViewController: UIViewController {
         loadGenre()
     }
     
+    func emptyList(){
+        let alert = UIAlertController(title: viewModel.alertName, message: viewModel.emptyMoviesList, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title:viewModel.alertName, style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
     private func loadGenre(){
         APIClient.getGenre (completionHandler:{ genress in
             self.genres.append(contentsOf: genress)
@@ -47,6 +53,9 @@ class GenreListViewController: UIViewController {
             APIClient.getMovies(page:page, completionHandler:{ movies in
                 self.results.append(contentsOf: movies)
                 self.results = self.results.filter{($0.genre_ids?.contains(self.idGen) ?? false)}
+                 if (self.results.count == 0) {
+                 self.emptyList()
+                 }
                 self.genreTableView.reloadData()
                 self.cargado = false
             })
