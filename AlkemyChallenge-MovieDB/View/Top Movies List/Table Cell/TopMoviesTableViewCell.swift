@@ -9,15 +9,20 @@ import UIKit
 
 class TopMoviesTableViewCell: UITableViewCell {
 
+    private let viewModel = MoviesViewModel()
+    
+    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var languageLabel: UILabel!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
     }
 
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+    func configure (for movie:Movie, gnre:[String]){
+        nameLabel.text = movie.original_title
+        let g = viewModel.getStringGenre(gnre: gnre)
+        languageLabel.text = g
     }
     
 }

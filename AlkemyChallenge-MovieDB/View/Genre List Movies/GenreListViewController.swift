@@ -9,21 +9,103 @@ import UIKit
 
 class GenreListViewController: UIViewController {
 
+    //MARK: - Atributes
+    
+    var gen: String = ""
+    var idGen: Int = 0
+    var results:[Movie] = []
+    var genres:[Genre] = []
+    var cargado = false
+    var page = 1
+    
+    @IBOutlet weak var genreTableView: UITableView!
+    @IBOutlet weak var genreLabel: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        genreLabel.text = "\(gen) Movies"
+        let nib = UINib(nibName: "MovieTableViewCell", bundle: .main)
+        genreTableView.register(nib,  forCellReuseIdentifier:"MovieTableViewCell")
+        
+        genreTableView.dataSource = self
+        genreTableView.delegate = self
+        
+        loadMovies(page: page)
+        loadGenre()
     }
-
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    
+    private func loadGenre(){
+        APIClient.getGenre (completionHandler:{ genress in
+            self.genres.append(contentsOf: genress)
+            self.genreTableView.reloadData()
+        })
     }
-    */
-
+    
+    private func loadMovies(page: Int){
+            cargado = true
+            APIClient.getMovies(page:page, completionHandler:{ movies in
+                self.results.append(contentsOf: movies)
+                self.results = self.results.filter{($0.genre_ids?.contains(self.idGen) ?? false)}
+                self.genreTableView.reloadData()
+                self.cargado = false
+            })
+    }
 }
+
+//MARK: - UITableViewDataSource
+    extension GenreListViewController: UITableViewDataSource {
+        
+        func numberOfSections(in tableView: UITableView) -> Int {
+            return 1
+        }
+        
+        func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+            return results.count
+        }
+        
+        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "MovieTableViewCell")as! MovieTableViewCell
+            let movie = results[indexPath.row]
+            let generos = obtenerGeneros(generos: movie.genre_ids ?? [])
+            cell.configure(for: movie, gnre: generos)
+            return cell
+           }
+}
+
+//MARK: - UITableViewDelegate
+extension GenreListViewController:UITableViewDelegate{
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath:IndexPath){
+        if indexPath.row == results.count - 5{
+            guard !cargado else {
+                return
+            }
+            page+=1
+            loadMovies(page: page)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath:IndexPath) {
+        genreTableView.deselectRow(at:indexPath, animated: true)
+        let selectedeMovie = results[indexPath.row]
+        let vc = MovieViewController(nibName: "MovieViewController", bundle: nil)
+        vc.movie = selectedeMovie
+        self.present(vc, animated: true,completion: nil)
+    }
+    
+    func obtenerGeneros(generos:[Int]) -> [String]{
+        var test:[String]=[]
+        for tipoGeneros in genres {
+            for generMovies in generos{
+                if (tipoGeneros.id! == generMovies){
+                    let nom = tipoGeneros.name!
+                    test.append(nom)
+                }
+            }
+        }
+        return test
+    }
+}
+
+
+

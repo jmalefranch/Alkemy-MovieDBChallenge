@@ -1,0 +1,5 @@
+#import <Foundation/Foundation.h>
+@interface PodsDummy_Pods_AlkemyChallenge_MovieDB_AlkemyChallenge_MovieDBUITests : NSObject
+@end
+@implementation PodsDummy_Pods_AlkemyChallenge_MovieDB_AlkemyChallenge_MovieDBUITests
+@end
